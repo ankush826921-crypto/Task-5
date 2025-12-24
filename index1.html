@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Capstone Web App – Glass UI Store</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Modern glassmorphism e‑commerce demo with performance optimization and responsive design." />
+
+  <style>
+    /* RESET */
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:#e5f9ff;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, #22c1c3 0,transparent 50%),
+        radial-gradient(circle at 100% 100%, #4b0082 0,transparent 55%),
+        linear-gradient(135deg,#020617,#020617 55%,#0b1120);
+      background-attachment:fixed;
+      padding-bottom:40px;
+    }
+
+    /* GLASS HELPERS */
+    .glass{
+      background:rgba(15,23,42,.65);
+      border:1px solid rgba(148,163,184,.35);
+      box-shadow:0 18px 45px rgba(15,23,42,.65);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+
+    header{
+      position:sticky;top:0;z-index:20;
+      padding:14px 6% 10px;
+      display:flex;flex-wrap:wrap;
+      align-items:center;justify-content:space-between;
+      gap:10px;
+    }
+    header .brand{
+      display:flex;flex-direction:column;
+    }
+    header h1{
+      font-size:1.6rem;
+      letter-spacing:.03em;
+    }
+    header span.sub{
+      font-size:.8rem;
+      opacity:.8;
+    }
+    .pill{
+      font-size:.8rem;
+      padding:3px 10px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.5);
+    }
+    nav{
+      display:flex;gap:10px;flex-wrap:wrap;
+    }
+    nav a{
+      font-size:.85rem;
+      text-decoration:none;
+      color:#e5f9ff;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid transparent;
+      transition:.2s;
+    }
+    nav a:hover{
+      border-color:#38bdf8;
+      background:rgba(15,23,42,.7);
+    }
+
+    main{
+      max-width:1180px;
+      margin:18px auto 0;
+      padding:0 5%;
+      display:grid;
+      grid-template-columns:3fr 2fr;
+      gap:20px;
+    }
+    section{
+      border-radius:18px;
+      padding:16px 16px 18px;
+    }
+    h2{
+      font-size:1.2rem;
+      margin-bottom:8px;
+      color:#f9fafb;
+    }
+    h3{
+      font-size:1rem;
+      margin:10px 0 6px;
+      color:#e0f2fe;
+    }
+    p{font-size:.9rem;margin-bottom:4px;opacity:.9}
+    ul{margin-left:18px;margin-top:4px;font-size:.88rem}
+    li{margin-bottom:4px}
+
+    .badge{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:999px;background:rgba(56,189,248,.16);border:1px solid rgba(56,189,248,.7);font-size:.75rem}
+    .timeline{font-size:.83rem;opacity:.9;margin-top:4px}
+
+    /* SHOP */
+    .toolbar{
+      display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px;
+    }
+    .toolbar input,.toolbar select{
+      background:rgba(15,23,42,.7);
+      color:#e5f9ff;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.5);
+      padding:6px 10px;
+      font-size:.8rem;
+      outline:none;
+      min-width:130px;
+    }
+    .toolbar input::placeholder{color:#9ca3af}
+
+    .product-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+      gap:12px;
+      margin-top:6px;
+    }
+    .product{
+      border-radius:16px;
+      padding:10px;
+      background:radial-gradient(circle at 10% 0%,rgba(56,189,248,.18),transparent 55%),
+                 radial-gradient(circle at 90% 120%,rgba(129,140,248,.25),transparent 55%),
+                 rgba(15,23,42,.6);
+      border:1px solid rgba(148,163,184,.5);
+      box-shadow:0 10px 30px rgba(15,23,42,.7);
+      transition:.22s transform, .22s box-shadow, .22s border-color;
+    }
+    .product:hover{
+      transform:translateY(-4px);
+      box-shadow:0 18px 45px rgba(15,23,42,.8);
+      border-color:rgba(56,189,248,.8);
+    }
+    .product img{
+      width:100%;border-radius:12px;display:block;margin-bottom:6px;
+    }
+    .product h4{font-size:.95rem;margin-bottom:2px}
+    .category-tag{
+      font-size:.7rem;
+      opacity:.85;
+      padding:1px 7px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.6);
+    }
+    .price{color:#bef264;font-weight:600;font-size:.9rem;margin:4px 0}
+
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      gap:4px;
+      background:linear-gradient(135deg,#22c55e,#22d3ee);
+      color:#020617;border:none;border-radius:999px;
+      padding:7px 12px;font-size:.8rem;
+      cursor:pointer;margin-top:4px;
+      box-shadow:0 8px 20px rgba(34,197,94,.35);
+      transition:.18s transform,.18s box-shadow,.18s filter;
+    }
+    .btn:hover{
+      transform:translateY(-1px);
+      filter:brightness(1.05);
+      box-shadow:0 10px 26px rgba(34,197,94,.45);
+    }
+    .btn.secondary{
+      background:transparent;
+      color:#e5f9ff;
+      border:1px solid rgba(148,163,184,.7);
+      box-shadow:none;
+    }
+    .btn.secondary:hover{
+      background:rgba(15,23,42,.8);
+      box-shadow:0 6px 16px rgba(15,23,42,.8);
+    }
+
+    .cart{
+      margin-top:6px;
+      font-size:.88rem;
+    }
+    .cart-header{
+      display:flex;justify-content:space-between;align-items:center;
+      margin-bottom:4px;
+    }
+    #cart-items{list-style:none;margin-top:4px;max-height:210px;overflow:auto;padding-right:3px}
+    #cart-items li{
+      display:flex;justify-content:space-between;gap:6px;
+      padding:4px 0;
+      border-bottom:1px dashed rgba(148,163,184,.45);
+    }
+    .qty-controls button{
+      border-radius:999px;border:1px solid rgba(148,163,184,.7);
+      background:transparent;color:#e5f9ff;
+      width:18px;height:18px;font-size:.7rem;cursor:pointer;
+    }
+    .muted{opacity:.8;font-size:.82rem}
+
+    .card-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:10px;margin-top:6px;
+    }
+    .stat{
+      border-radius:14px;
+      padding:10px 12px;
+      background:radial-gradient(circle at 0 0,rgba(56,189,248,.2),transparent 55%),
+                 rgba(15,23,42,.8);
+      border:1px solid rgba(148,163,184,.6);
+      font-size:.86rem;
+    }
+    .stat strong{display:block;margin-bottom:3px}
+
+    form{margin-top:4px;font-size:.86rem}
+    label{display:block;margin-top:6px}
+    input,select,textarea{
+      width:100%;margin-top:2px;
+      padding:6px 9px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.6);
+      background:rgba(15,23,42,.8);
+      color:#e5f9ff;
+      font-size:.85rem;
+      outline:none;
+    }
+    textarea{
+      border-radius:12px;
+      resize:vertical;
+    }
+    input::placeholder,textarea::placeholder{color:#9ca3af}
+
+    @media(max-width:860px){
+      main{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <!-- GLASS NAVBAR -->
+  <header class="glass">
+    <div class="brand">
+      <h1>Glass UI Store</h1>
+      <span class="sub">Capstone web app · HTML · CSS · JS</span>
+      <span class="timeline">Timeline: 9 days <span class="badge">TASK 5</span></span>
+    </div>
+    <nav>
+      <a href="#shop">Shop</a>
+      <a href="#performance">Performance</a>
+      <a href="#compatibility">Compatibility</a>
+      <a href="#contact">Feedback</a>
+    </nav>
+    <span class="pill">Live Demo · Student Project</span>
+  </header>
+
+  <main>
+    <!-- SHOP -->
+    <section id="shop" class="glass">
+      <h2>Online Store (Main App)</h2>
+      <p>Yahaan user products dekh sakta hai, filter/search kar sakta hai aur **cart** me add kar sakta hai.</p>
+
+      <div class="toolbar">
+        <input id="search" type="search" placeholder="Search products..." />
+        <select id="categoryFilter">
+          <option value="all">All categories</option>
+          <option value="audio">Audio</option>
+          <option value="wearable">Wearables</option>
+          <option value="accessory">Accessories</option>
+        </select>
+      </div>
+
+      <div class="product-grid" id="productGrid"></div>
+
+      <div class="cart">
+        <div class="cart-header">
+          <h3>Cart</h3>
+          <div>
+            <span id="cart-count" class="muted">0 items</span>
+            <button id="clear-cart" class="btn secondary" type="button">Clear</button>
+          </div>
+        </div>
+        <p id="cart-empty" class="muted">Cart abhi khali hai.</p>
+        <ul id="cart-items"></ul>
+        <p id="cart-total" style="margin-top:4px;"></p>
+      </div>
+    </section>
+
+    <!-- PERFORMANCE -->
+    <section id="performance" class="glass">
+      <h2>Performance Optimization</h2>
+      <p>Yeh section batata hai ki app ko fast aur **lightweight** rakhne ke liye kya steps liye gaye.</p>
+
+      <h3>Techniques Used</h3>
+      <ul>
+        <li>Single HTML file + inline CSS/JS for fewer HTTP requests.</li>
+        <li>Lazy‑loading images and small product list for quick first paint.[web:16][web:19]</li>
+        <li>Pure vanilla JavaScript, no heavy frameworks, iske wajah se JS bundle chhota rehta hai.[web:9][web:18]</li>
+        <li>GPU‑accelerated glassmorphism (backdrop‑filter) with graceful fallback background color.[web:7][web:14]</li>
+      </ul>
+
+      <h3>Metrics (Demo)</h3>
+      <div class="card-grid">
+        <div class="stat">
+          <strong>Estimated load time</strong>
+          <span>&lt; 1s on broadband, ~2–3s on mobile 3G.</span>
+        </div>
+        <div class="stat">
+          <strong>Requests</strong>
+          <span>1 HTML + few placeholder images only.</span>
+        </div>
+        <div class="stat">
+          <strong>Responsive layout</strong>
+          <span>Single CSS grid with media queries under 860px.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPATIBILITY -->
+    <section id="compatibility" class="glass">
+      <h2>Cross‑Browser & Mobile</h2>
+      <p>Design standard properties use karta hai taa ki maximum **compatibility** mile.</p>
+
+      <h3>Implementation Details</h3>
+      <ul>
+        <li>Modern, widely‑supported CSS (flex, grid, gradients, backdrop‑filter with fallback).</li>
+        <li>Test target: Chrome, Firefox, Edge, Safari, and Android/iOS browsers.[web:14]</li>
+        <li>No experimental APIs, isliye older versions pe bhi layout stable rahega.</li>
+      </ul>
+
+      <h3>Testing Checklist</h3>
+      <ul>
+        <li>Har browser me open karke navbar links, search, filter aur cart actions test karo.</li>
+        <li>Mobile view me zoom, scroll, tap behaviour check karo (koi overflow nahi hona chahiye).</li>
+        <li>LocalStorage ke through refresh ke baad bhi cart items save rehte hain ya nahi, verify karo.[web:9][web:18]</li>
+      </ul>
+    </section>
+
+    <!-- FEEDBACK -->
+    <section id="contact" class="glass">
+      <h2>Feedback Form</h2>
+      <p>Is form se user se **feedback** collect kar sakte ho (UI/UX, speed, bugs, etc.).</p>
+
+      <form id="feedbackForm">
+        <label>Name
+          <input type="text" placeholder="Your name" required>
+        </label>
+        <label>Email
+          <input type="email" placeholder="you@example.com" required>
+        </label>
+        <label>Device
+          <select>
+            <option>Desktop / Laptop</option>
+            <option>Tablet</option>
+            <option>Mobile Phone</option>
+          </select>
+        </label>
+        <label>How was the performance?
+          <textarea rows="3" placeholder="Fast, slow, any issues..." required></textarea>
+        </label>
+        <button type="submit" class="btn" style="margin-top:10px;">Submit feedback</button>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    // PRODUCT DATA
+    const products = [
+      {id:"1",name:"Wireless Headphones",price:1999,category:"audio",img:"https://via.placeholder.com/320x190?text=Headphones"},
+      {id:"2",name:"Smart Watch Pro",price:2499,category:"wearable",img:"https://via.placeholder.com/320x190?text=Smart+Watch"},
+      {id:"3",name:"Bluetooth Speaker",price:1499,category:"audio",img:"https://via.placeholder.com/320x190?text=Speaker"},
+      {id:"4",name:"USB‑C Fast Charger",price:899,category:"accessory",img:"https://via.placeholder.com/320x190?text=Charger"}
+    ];
+
+    const productGrid   = document.getElementById("productGrid");
+    const searchInput   = document.getElementById("search");
+    const categorySelect= document.getElementById("categoryFilter");
+
+    const cartItemsEl   = document.getElementById("cart-items");
+    const cartEmptyEl   = document.getElementById("cart-empty");
+    const cartTotalEl   = document.getElementById("cart-total");
+    const cartCountEl   = document.getElementById("cart-count");
+    const clearCartBtn  = document.getElementById("clear-cart");
+
+    let cart = JSON.parse(localStorage.getItem("glass-cart")||"[]");
+
+    function renderProducts(){
+      const term = searchInput.value.toLowerCase();
+      const cat  = categorySelect.value;
+      productGrid.innerHTML = "";
+      products
+        .filter(p => (cat==="all"||p.category===cat) &&
+                     p.name.toLowerCase().includes(term))
+        .forEach(p=>{
+          const card = document.createElement("article");
+          card.className = "product";
+          card.innerHTML = `
+            <img src="${p.img}" loading="lazy" alt="${p.name}">
+            <h4>${p.name}</h4>
+            <span class="category-tag">${p.category}</span>
+            <p class="price">₹${p.price}</p>
+            <button class="btn" data-id="${p.id}">
+              <span>+ Add to cart</span>
+            </button>
+          `;
+          productGrid.appendChild(card);
+        });
+    }
+
+    function saveCart(){
+      localStorage.setItem("glass-cart", JSON.stringify(cart));
+    }
+
+    function renderCart(){
+      cartItemsEl.innerHTML = "";
+      if(!cart.length){
+        cartEmptyEl.style.display = "block";
+        cartTotalEl.textContent   = "";
+        cartCountEl.textContent   = "0 items";
+        return;
+      }
+      cartEmptyEl.style.display = "none";
+      let total = 0, count = 0;
+      cart.forEach(item=>{
+        total += item.qty * item.price;
+        count += item.qty;
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span>${item.name}</span>
+          <span class="qty-controls">
+            <button data-id="${item.id}" data-act="dec">-</button>
+            <span>${item.qty}</span>
+            <button data-id="${item.id}" data-act="inc">+</button>
+          </span>
+          <span>₹${item.qty*item.price}</span>
+        `;
+        cartItemsEl.appendChild(li);
+      });
+      cartTotalEl.textContent = "Total: ₹" + total;
+      cartCountEl.textContent = count + (count===1 ? " item" : " items");
+    }
+
+    function addToCart(id){
+      const prod = products.find(p=>p.id===id);
+      if(!prod) return;
+      const existing = cart.find(i=>i.id===id);
+      if(existing) existing.qty += 1;
+      else cart.push({id:prod.id,name:prod.name,price:prod.price,qty:1});
+      saveCart();
+      renderCart();
+    }
+
+    productGrid.addEventListener("click", e=>{
+      const btn = e.target.closest("button[data-id]");
+      if(!btn) return;
+      addToCart(btn.dataset.id);
+    });
+
+    cartItemsEl.addEventListener("click", e=>{
+      const btn = e.target.closest("button[data-id][data-act]");
+      if(!btn) return;
+      const id  = btn.dataset.id;
+      const act = btn.dataset.act;
+      const item= cart.find(i=>i.id===id);
+      if(!item) return;
+      if(act==="inc") item.qty += 1;
+      else if(act==="dec"){
+        item.qty -= 1;
+        if(item.qty<=0) cart = cart.filter(i=>i.id!==id);
+      }
+      saveCart();
+      renderCart();
+    });
+
+    clearCartBtn.addEventListener("click",()=>{
+      if(!cart.length) return;
+      if(confirm("Clear all items from cart?")){
+        cart = [];
+        saveCart();
+        renderCart();
+      }
+    });
+
+    searchInput.addEventListener("input",renderProducts);
+    categorySelect.addEventListener("change",renderProducts);
+
+    document.getElementById("feedbackForm").addEventListener("submit",e=>{
+      e.preventDefault();
+      alert("Thanks for your feedback! 😊");
+      e.target.reset();
+    });
+
+    // Initial render
+    renderProducts();
+    renderCart();
+  </script>
+</body>
+</html>
